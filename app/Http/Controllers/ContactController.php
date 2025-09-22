@@ -7,6 +7,7 @@ use App\Models\Contact;
 use App\Http\Requests\StoreContactRequest;
 use App\Http\Requests\UpdateContactRequest;
 use App\Repositories\ContactRepositoryInterface;
+use App\Services\ContactImportService;
 
 class ContactController extends Controller
 {
@@ -55,9 +56,15 @@ class ContactController extends Controller
 
     public function import(Request $request, ContactImportService $importService){
        $request->validate([
-              'file' => 'required|file|mimes:xml',
+              'file' => 'required|file',
        ]);
-       $count = $importService->import($request->file('file'));
+       $file = $request->file('file');
+        try {
+            $xml = simplexml_load_file($file->getRealPath());
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Invalid file, Please provide a Valid XML File'], 422);
+        }
+       $count = $importService->import($file);
        return response()->json(['imported'=>$count,'message' => "$count contacts imported successfully"], 200);
     }
 }

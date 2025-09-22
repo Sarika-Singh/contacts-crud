@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 use App\Models\Contact;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class ContactTest extends TestCase
@@ -18,5 +19,13 @@ class ContactTest extends TestCase
 
         $response->assertStatus(201);
         $this->assertDatabaseHas('contacts', ['name' => 'Test User']);
+    }
+    public function it_fails_validation_when_creating_contact(): void
+    {
+        $response = $this->postJson('/api/contacts', [
+            'phone' => '1234567890',
+        ]);
+
+        $response->assertStatus(422);
     }
 }

@@ -12,8 +12,7 @@ class ContactImportService
         $this->contacts = $contacts;
     }
     public function import($file): int
-    {
-        
+    {        
         $xml = simplexml_load_file($file);
         $importedCount = 0;
         foreach ($xml->contact as $contactData) {
